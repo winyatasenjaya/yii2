@@ -13,6 +13,7 @@ DROP TABLE IF EXISTS `category` CASCADE;
 DROP TABLE IF EXISTS `customer` CASCADE;
 DROP TABLE IF EXISTS `profile` CASCADE;
 DROP TABLE IF EXISTS `null_values` CASCADE;
+DROP TABLE IF EXISTS `negative_default_values` CASCADE;
 DROP TABLE IF EXISTS `type` CASCADE;
 DROP TABLE IF EXISTS `constraints` CASCADE;
 DROP TABLE IF EXISTS `animal` CASCADE;
@@ -20,6 +21,10 @@ DROP TABLE IF EXISTS `default_pk` CASCADE;
 DROP TABLE IF EXISTS `document` CASCADE;
 DROP TABLE IF EXISTS `comment` CASCADE;
 DROP VIEW IF EXISTS `animal_view`;
+DROP TABLE IF EXISTS `T_constraints_4` CASCADE;
+DROP TABLE IF EXISTS `T_constraints_3` CASCADE;
+DROP TABLE IF EXISTS `T_constraints_2` CASCADE;
+DROP TABLE IF EXISTS `T_constraints_1` CASCADE;
 
 CREATE TABLE `constraints`
 (
@@ -41,7 +46,8 @@ CREATE TABLE `customer` (
   `address` text,
   `status` int (11) DEFAULT 0,
   `profile_id` int(11),
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  CONSTRAINT `FK_customer_profile_id` FOREIGN KEY (`profile_id`) REFERENCES `profile` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `category` (
@@ -112,6 +118,14 @@ CREATE TABLE null_values (
   PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `negative_default_values` (
+  `smallint_col` smallint default '-123',
+  `int_col` integer default '-123',
+  `bigint_col` bigint default '-123',
+  `float_col` double default '-12345.6789',
+  `numeric_col` decimal(5,2) default '-33.22'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `type` (
   `int_col` integer NOT NULL,
   `int_col2` integer DEFAULT '1',
@@ -119,7 +133,7 @@ CREATE TABLE `type` (
   `char_col` char(100) NOT NULL,
   `char_col2` varchar(100) DEFAULT 'something',
   `char_col3` text,
-  `enum_col` enum('a', 'B'),
+  `enum_col` enum('a', 'B', 'c,D'),
   `float_col` double(4,3) NOT NULL,
   `float_col2` double DEFAULT '1.23',
   `blob_col` blob,
@@ -247,3 +261,46 @@ CREATE TABLE `bit_values` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `bit_values` (id, val) VALUES (1, b'0'), (2, b'1');
+
+CREATE TABLE `T_constraints_1`
+(
+    `C_id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `C_not_null` INT NOT NULL,
+    `C_check` VARCHAR(255) NULL CHECK (`C_check` <> ''),
+    `C_unique` INT NOT NULL,
+    `C_default` INT NOT NULL DEFAULT 0,
+    CONSTRAINT `CN_unique` UNIQUE (`C_unique`)
+)
+ENGINE = 'InnoDB' DEFAULT CHARSET = 'utf8';
+
+CREATE TABLE `T_constraints_2`
+(
+    `C_id_1` INT NOT NULL,
+    `C_id_2` INT NOT NULL,
+    `C_index_1` INT NULL,
+    `C_index_2_1` INT NULL,
+    `C_index_2_2` INT NULL,
+    CONSTRAINT `CN_constraints_2_multi` UNIQUE (`C_index_2_1`, `C_index_2_2`),
+    CONSTRAINT `CN_pk` PRIMARY KEY (`C_id_1`, `C_id_2`)
+)
+ENGINE = 'InnoDB' DEFAULT CHARSET = 'utf8';
+
+CREATE INDEX `CN_constraints_2_single` ON `T_constraints_2` (`C_index_1`);
+
+CREATE TABLE `T_constraints_3`
+(
+    `C_id` INT NOT NULL,
+    `C_fk_id_1` INT NOT NULL,
+    `C_fk_id_2` INT NOT NULL,
+    CONSTRAINT `CN_constraints_3` FOREIGN KEY (`C_fk_id_1`, `C_fk_id_2`) REFERENCES `T_constraints_2` (`C_id_1`, `C_id_2`) ON DELETE CASCADE ON UPDATE CASCADE
+)
+ENGINE = 'InnoDB' DEFAULT CHARSET = 'utf8';
+
+CREATE TABLE `T_constraints_4`
+(
+    `C_id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `C_col_1` INT NULL,
+    `C_col_2` INT NOT NULL,
+    CONSTRAINT `CN_constraints_4` UNIQUE (`C_col_1`, `C_col_2`)
+)
+ENGINE = 'InnoDB' DEFAULT CHARSET = 'utf8';

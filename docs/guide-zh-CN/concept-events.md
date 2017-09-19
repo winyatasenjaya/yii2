@@ -68,7 +68,7 @@ $foo->on(Foo::EVENT_HELLO, function ($event) {
 事件处理器顺序
 -----------------
 
-可以附加一个或多个处理器到一个事件。当事件被触发，已附加的处理器将按附加次序依次调用。如果某个处理器需要停止其后的处理器调用，可以设置 `$event` 参数的 [yii\base\Event::handled]] 属性为真，如下：
+可以附加一个或多个处理器到一个事件。当事件被触发，已附加的处理器将按附加次序依次调用。如果某个处理器需要停止其后的处理器调用，可以设置 `$event` 参数的 [[yii\base\Event::handled]] 属性为真，如下：
 
 ```php
 $foo->on(Foo::EVENT_HELLO, function ($event) {
@@ -196,7 +196,7 @@ Event::on(ActiveRecord::className(), ActiveRecord::EVENT_AFTER_INSERT, function 
 use yii\base\Event;
 
 Event::on(Foo::className(), Foo::EVENT_HELLO, function ($event) {
-    echo $event->sender;  // 显示 "app\models\Foo"
+    var_dump($event->sender);  // 显示 "null"
 });
 
 Event::trigger(Foo::className(), Foo::EVENT_HELLO);
@@ -204,7 +204,7 @@ Event::trigger(Foo::className(), Foo::EVENT_HELLO);
 
 注意这种情况下 `$event->sender` 指向触发事件的类名而不是对象实例。
 
-> Note: 因为类级别的处理器响应类和其子类的所有实例触发的事件，必须谨慎使用，尤其是底层的基类，如 [[yii\base\Object]]。
+> Note: 因为类级别的处理器响应类和其子类的所有实例触发的事件，必须谨慎使用，尤其是底层的基类，如 [[yii\base\BaseObject]]。
 
 移除类级别的事件处理器只需调用[[yii\base\Event::off()]]，如：
 
